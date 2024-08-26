@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html th:lang="${#locale.language}" th:dir="#{language.direction}" th:data-language="${#locale.toString()}" xmlns:th="https://www.thymeleaf.org">
+<html
+  th:lang="${#locale.language}"
+  th:dir="#{language.direction}"
+  th:data-language="${#locale.toString()}"
+  xmlns:th="https://www.thymeleaf.org"
+>
   <head>
-  <th:block th:insert="~{fragments/common :: head(title=#{adjustContrast.title}, header=#{adjustContrast.header})}"></th:block>
+    <th:block
+      th:insert="~{fragments/common :: head(title=#{adjustContrast.title}, header=#{adjustContrast.header})}"
+    ></th:block>
     <style>
       #flex-container {
         display: flex;
         align-items: center;
       }
       #sliders-container {
-        padding: 0 20px;  /* Add some padding to separate sliders from canvas */
+        padding: 0 20px; /* Add some padding to separate sliders from canvas */
       }
     </style>
   </head>
@@ -17,40 +24,79 @@
     <div id="page-container">
       <div id="content-wrap">
         <th:block th:insert="~{fragments/navbar.html :: navbar}"></th:block>
-        <br><br>
+        <br /><br />
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-md-12 bg-card">
               <div class="row justify-content-center">
                 <div class="col-md-3">
-                  <div id="sliders-container" style="display:none;">
-                    <h4><span th:text="#{adjustContrast.contrast}"></span> <span id="contrast-val">100</span>%</h4>
-                    <input type="range" min="0" max="200" value="100" id="contrast-slider">
+                  <div id="sliders-container" style="display: none">
+                    <h4>
+                      <span th:text="#{adjustContrast.contrast}"></span>
+                      <span id="contrast-val">100</span>%
+                    </h4>
+                    <input
+                      type="range"
+                      min="0"
+                      max="200"
+                      value="100"
+                      id="contrast-slider"
+                    />
 
-                    <h4><span th:text="#{adjustContrast.brightness}"></span> <span id="brightness-val">100</span>%</h4>
-                    <input type="range" min="0" max="200" value="100" id="brightness-slider">
+                    <h4>
+                      <span th:text="#{adjustContrast.brightness}"></span>
+                      <span id="brightness-val">100</span>%
+                    </h4>
+                    <input
+                      type="range"
+                      min="0"
+                      max="200"
+                      value="100"
+                      id="brightness-slider"
+                    />
 
-                    <h4><span th:text="#{adjustContrast.saturation}"></span> <span id="saturation-val">100</span>%</h4>
-                    <input type="range" min="0" max="200" value="100" id="saturation-slider">
+                    <h4>
+                      <span th:text="#{adjustContrast.saturation}"></span>
+                      <span id="saturation-val">100</span>%
+                    </h4>
+                    <input
+                      type="range"
+                      min="0"
+                      max="200"
+                      value="100"
+                      id="saturation-slider"
+                    />
                   </div>
                 </div>
                 <div class="col-md-7">
                   <div class="tool-header">
-                    <span class="material-symbols-rounded tool-header-icon advance">palette</span>
-                    <span class="tool-header-text" th:text="#{adjustContrast.header}"></span>
+                    <span
+                      class="material-symbols-rounded tool-header-icon advance"
+                      >palette</span
+                    >
+                    <span
+                      class="tool-header-text"
+                      th:text="#{adjustContrast.header}"
+                    ></span>
                   </div>
                   <div class="col-md-8">
-                    <div th:replace="~{fragments/common :: fileSelector(name='fileInput', multipleInputsForSingleRequest=false, accept='application/pdf', remoteCall='false')}"></div>
+                    <div
+                      th:replace="~{fragments/common :: fileSelector(name='fileInput', multipleInputsForSingleRequest=false, accept='application/pdf', remoteCall='false')}"
+                    ></div>
                   </div>
-                  <br>
+                  <br />
                   <canvas id="contrast-pdf-canvas"></canvas>
-                  <button id="download-button" class="btn btn-primary" th:text="#{adjustContrast.download}"></button>
+                  <button
+                    id="download-button"
+                    class="btn btn-primary"
+                    th:text="#{adjustContrast.download}"
+                  ></button>
                 </div>
               </div>
 
               <script>
-                var canvas = document.getElementById('contrast-pdf-canvas');
-                var context = canvas.getContext('2d');
+                var canvas = document.getElementById("contrast-pdf-canvas");
+                var context = canvas.getContext("2d");
                 var originalImageData = null;
                 var allPages = [];
                 var pdfDoc = null;
@@ -58,27 +104,32 @@
 
                 async function renderPDFAndSaveOriginalImageData(file) {
                   var fileReader = new FileReader();
-                  fileReader.onload = async function() {
+                  fileReader.onload = async function () {
                     var data = new Uint8Array(this.result);
-                    pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs-legacy/pdf.worker.mjs'
-                    pdf = await pdfjsLib.getDocument({data: data}).promise;
+                    pdfjsLib.GlobalWorkerOptions.workerSrc =
+                      "./pdfjs-legacy/pdf.worker.mjs";
+                    pdf = await pdfjsLib.getDocument({ data: data }).promise;
 
                     // Get the number of pages in the PDF
                     var numPages = pdf.numPages;
-                    allPages = Array.from({length: numPages}, (_, i) => i + 1);
+                    allPages = Array.from(
+                      { length: numPages },
+                      (_, i) => i + 1
+                    );
 
                     // Create a new PDF document
                     pdfDoc = await PDFLib.PDFDocument.create();
                     // Render the first page in the viewer
                     await renderPageAndAdjustImageProperties(1);
-                    document.getElementById("sliders-container").style.display = "block";
+                    document.getElementById("sliders-container").style.display =
+                      "block";
                   };
                   fileReader.readAsArrayBuffer(file);
                 }
 
                 // This function is now async and returns a promise
                 function renderPageAndAdjustImageProperties(pageNum) {
-                  return new Promise(async function(resolve, reject) {
+                  return new Promise(async function (resolve, reject) {
                     var page = await pdf.getPage(pageNum);
                     var scale = 1.5;
                     var viewport = page.getViewport({ scale: scale });
@@ -88,12 +139,17 @@
 
                     var renderContext = {
                       canvasContext: context,
-                      viewport: viewport
+                      viewport: viewport,
                     };
 
                     var renderTask = page.render(renderContext);
                     renderTask.promise.then(function () {
-                      originalImageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                      originalImageData = context.getImageData(
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                      );
                       adjustImageProperties();
                       resolve();
                     });
@@ -102,22 +158,31 @@
                 }
 
                 function adjustImageProperties() {
-                  var contrast = parseFloat(document.getElementById('contrast-slider').value);
-                  var brightness = parseFloat(document.getElementById('brightness-slider').value);
-                  var saturation = parseFloat(document.getElementById('saturation-slider').value);
+                  var contrast = parseFloat(
+                    document.getElementById("contrast-slider").value
+                  );
+                  var brightness = parseFloat(
+                    document.getElementById("brightness-slider").value
+                  );
+                  var saturation = parseFloat(
+                    document.getElementById("saturation-slider").value
+                  );
 
                   contrast /= 100; // normalize to range [0, 2]
                   brightness /= 100; // normalize to range [0, 2]
                   saturation /= 100; // normalize to range [0, 2]
 
                   if (originalImageData) {
-                    var newImageData = context.createImageData(originalImageData.width, originalImageData.height);
+                    var newImageData = context.createImageData(
+                      originalImageData.width,
+                      originalImageData.height
+                    );
                     newImageData.data.set(originalImageData.data);
 
-                    for(var i=0; i<newImageData.data.length; i+=4) {
+                    for (var i = 0; i < newImageData.data.length; i += 4) {
                       var r = newImageData.data[i];
-                      var g = newImageData.data[i+1];
-                      var b = newImageData.data[i+2];
+                      var g = newImageData.data[i + 1];
+                      var b = newImageData.data[i + 2];
                       // Adjust contrast
                       r = adjustContrastForPixel(r, contrast);
                       g = adjustContrastForPixel(g, contrast);
@@ -129,18 +194,21 @@
                       // Adjust saturation
                       var rgb = adjustSaturationForPixel(r, g, b, saturation);
                       newImageData.data[i] = rgb[0];
-                      newImageData.data[i+1] = rgb[1];
-                      newImageData.data[i+2] = rgb[2];
+                      newImageData.data[i + 1] = rgb[1];
+                      newImageData.data[i + 2] = rgb[2];
                     }
                     context.putImageData(newImageData, 0, 0);
                   }
                 }
 
                 function rgbToHsl(r, g, b) {
-                  r /= 255, g /= 255, b /= 255;
+                  (r /= 255), (g /= 255), (b /= 255);
 
-                  var max = Math.max(r, g, b), min = Math.min(r, g, b);
-                  var h, s, l = (max + min) / 2;
+                  var max = Math.max(r, g, b),
+                    min = Math.min(r, g, b);
+                  var h,
+                    s,
+                    l = (max + min) / 2;
 
                   if (max === min) {
                     h = s = 0; // achromatic
@@ -149,9 +217,15 @@
                     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
                     switch (max) {
-                      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                      case g: h = (b - r) / d + 2; break;
-                      case b: h = (r - g) / d + 4; break;
+                      case r:
+                        h = (g - b) / d + (g < b ? 6 : 0);
+                        break;
+                      case g:
+                        h = (b - r) / d + 2;
+                        break;
+                      case b:
+                        h = (r - g) / d + 4;
+                        break;
                     }
 
                     h /= 6;
@@ -221,19 +295,22 @@
                 async function downloadPDF() {
                   for (var i = 0; i < allPages.length; i++) {
                     await renderPageAndAdjustImageProperties(allPages[i]);
-                    const pngImageBytes = canvas.toDataURL('image/png');
+                    const pngImageBytes = canvas.toDataURL("image/png");
                     const pngImage = await pdfDoc.embedPng(pngImageBytes);
                     const pngDims = pngImage.scale(1);
 
                     // Create a blank page matching the dimensions of the image
-                    const page = pdfDoc.addPage([pngDims.width, pngDims.height]);
+                    const page = pdfDoc.addPage([
+                      pngDims.width,
+                      pngDims.height,
+                    ]);
 
                     // Draw the PNG image
                     page.drawImage(pngImage, {
                       x: 0,
                       y: 0,
                       width: pngDims.width,
-                      height: pngDims.height
+                      height: pngDims.height,
                     });
                   }
 
@@ -241,17 +318,19 @@
                   const pdfBytes = await pdfDoc.save();
 
                   // Create a Blob
-                  const blob = new Blob([pdfBytes.buffer], {type: "application/pdf"});
+                  const blob = new Blob([pdfBytes.buffer], {
+                    type: "application/pdf",
+                  });
 
                   // Create download link
-                  const downloadLink = document.createElement('a');
+                  const downloadLink = document.createElement("a");
                   downloadLink.href = URL.createObjectURL(blob);
                   downloadLink.download = "download.pdf";
                   downloadLink.click();
 
                   // After download, reset the viewer and clear stored data
-                  allPages = [];  // Clear the pages
-                  originalImageData = null;  // Clear the image data
+                  allPages = []; // Clear the pages
+                  originalImageData = null; // Clear the image data
 
                   // Go back to page 1 and render it in the viewer
                   if (pdf !== null) {
@@ -260,30 +339,43 @@
                 }
 
                 // Event listeners
-                document.getElementById('fileInput-input').addEventListener('change', function(e) {
-                  if (e.target.files.length > 0) {
-                    renderPDFAndSaveOriginalImageData(e.target.files[0]);
-                  }
-                });
+                document
+                  .getElementById("fileInput-input")
+                  .addEventListener("change", function (e) {
+                    if (e.target.files.length > 0) {
+                      renderPDFAndSaveOriginalImageData(e.target.files[0]);
+                    }
+                  });
 
-                document.getElementById('contrast-slider').addEventListener('input', function() {
-                  document.getElementById('contrast-val').textContent = this.value;
-                  adjustImageProperties();
-                });
+                document
+                  .getElementById("contrast-slider")
+                  .addEventListener("input", function () {
+                    document.getElementById("contrast-val").textContent =
+                      this.value;
+                    adjustImageProperties();
+                  });
 
-                document.getElementById('brightness-slider').addEventListener('input', function() {
-                  document.getElementById('brightness-val').textContent = this.value;
-                  adjustImageProperties();
-                });
+                document
+                  .getElementById("brightness-slider")
+                  .addEventListener("input", function () {
+                    document.getElementById("brightness-val").textContent =
+                      this.value;
+                    adjustImageProperties();
+                  });
 
-                document.getElementById('saturation-slider').addEventListener('input', function() {
-                  document.getElementById('saturation-val').textContent = this.value;
-                  adjustImageProperties();
-                });
+                document
+                  .getElementById("saturation-slider")
+                  .addEventListener("input", function () {
+                    document.getElementById("saturation-val").textContent =
+                      this.value;
+                    adjustImageProperties();
+                  });
 
-                document.getElementById('download-button').addEventListener('click', function() {
-                  downloadPDF();
-                });
+                document
+                  .getElementById("download-button")
+                  .addEventListener("click", function () {
+                    downloadPDF();
+                  });
               </script>
             </div>
           </div>

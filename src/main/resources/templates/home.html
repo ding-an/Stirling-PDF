@@ -237,8 +237,8 @@
     </div>
     <th:block th:insert="~{fragments/footer.html :: footer}"></th:block>
   </div>
-  
-  
+
+
   <!-- Survey Modal -->
   <div class="modal fade" id="surveyModal" tabindex="-1" role="dialog" aria-labelledby="surveyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -258,9 +258,9 @@
             <input type="checkbox" id="dontShowAgain">
             <label for="dontShowAgain" th:text="#{survey.dontShowAgain}">Don't show again</label>
           </div>
-          
+
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{close}">Close</button>
-         
+
         </div>
       </div>
     </div>
@@ -273,12 +273,12 @@
       const modal = new bootstrap.Modal(document.getElementById('surveyModal'));
       const dontShowAgain = document.getElementById('dontShowAgain');
       const takeSurveyButton = document.getElementById('takeSurvey');
-    
+
       if (localStorage.getItem('surveyVersion') !== surveyVersion || !localStorage.getItem('dontShowSurvey')) {
         modal.show();
       }
 
-    
+
       dontShowAgain.addEventListener('change', function() {
         if (this.checked) {
           localStorage.setItem('dontShowSurvey', 'true');
@@ -288,13 +288,13 @@
           localStorage.removeItem('surveyVersion');
         }
       });
-    
+
       takeSurveyButton.addEventListener('click', function() {
         localStorage.setItem('dontShowSurvey', 'true');
         localStorage.setItem('surveyVersion', surveyVersion);
         modal.hide();
       });
-    
+
       if (localStorage.getItem('dontShowSurvey')) {
         modal.hide();
       }
