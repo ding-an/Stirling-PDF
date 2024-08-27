@@ -14,7 +14,7 @@ var elements = {
 
 function getElements() {
   elements.lightModeStyles = document.getElementById("light-mode-styles");
-  elements.darkModeStyles = document.getElementById("dark-mode-styles");
+  elements.darkModeStyles = document.getElementById("light-mode-styles");
   elements.rainbowModeStyles = document.getElementById("rainbow-mode-styles");
   elements.darkModeIcon = document.getElementById("dark-mode-icon");
   elements.searchBar = document.getElementById("searchBar");
