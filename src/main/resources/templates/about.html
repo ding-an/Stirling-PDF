@@ -21,6 +21,7 @@
       var iframe = document.getElementById('pricing-iframe');
       var oWrap = document.getElementById('content-wrap');
       iframe.style.height = oWrap.clientHeight - 62 + 'px';
+      iframe.contentWindow.postMessage({ from: 'pdf' }, '*');
     });
   </script>
 </body>
