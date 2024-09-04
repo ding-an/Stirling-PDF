@@ -347,16 +347,16 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="account" href="https://xbwl-fe-payment-site.vercel.app/continue-with-google">
+            <a class="nav-link" id="account" href="#">
               Account
             </a>
-            <!-- <div class="dropdown-menu dropdown-menu-tp" aria-labelledby="searchDropdown">
-              <div style="height: 210px; width: 400px;">
-                <iframe id="login-iframe" src="https://xbwl-fe-payment-site.vercel.app/continue-with-google"
-                  width="100%" height="100%" title="login">
-                </iframe>
-              </div>
-            </div> -->
+            <script>
+              const accountLink = document.getElementById('account');
+              accountLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = `https://xbwl-fe-payment-site.vercel.app/continue-with-google?backendUrl=${location.href}`;
+              })
+            </script>
           </li>
         </ul>
       </div>
