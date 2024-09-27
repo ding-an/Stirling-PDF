@@ -78,6 +78,11 @@ document.getElementById("submitConfigBtn").addEventListener("click", function ()
   if (validatePipeline() === false) {
     return;
   }
+  const user = localStorage.getItem('user')
+  if (!user || user === 'null') {
+    window.parent.postMessage('/pricing', '*'); // 发送消息到父窗口
+    return
+  }
   let selectedOperation = document.getElementById("operationsDropdown").value;
 
   var pipelineName = document.getElementById("pipelineName").value;
@@ -218,13 +223,13 @@ fetch("v1/api-docs")
 
 document.getElementById('deletePipelineBtn').addEventListener('click', function(event) {
     event.preventDefault();
-    let pipelineName = document.getElementById('pipelineName').value; 
+    let pipelineName = document.getElementById('pipelineName').value;
 	if (confirm(deletePipelineText + pipelineName)) {
 		removePipelineFromUI(pipelineName);
 	    let key = "#Pipeline-" + pipelineName;
 	    if (localStorage.getItem(key)) {
 	            localStorage.removeItem(key);
-	    } 
+	    }
 	    let pipelineSelect = document.getElementById("pipelineSelect");
 	    let modal = document.getElementById('pipelineSettingsModal');
 	    if (modal.style.display !== 'none') {
@@ -486,7 +491,7 @@ document.getElementById("addOperationBtn").addEventListener("click", function ()
 				      if (Array.isArray(parsedValue)) {
 				        settings[parameter.name] = parsedValue;
 				      } else {
-				        settings[parameter.name] = value; 
+				        settings[parameter.name] = value;
 				      }
 				    } catch (e) {
 				      settings[parameter.name] = value;
@@ -689,7 +694,7 @@ async function processPipelineConfig(configString) {
 			} else {
 				input.value = value;
 			}
-            
+
         }
       }
     });

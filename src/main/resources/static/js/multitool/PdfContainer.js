@@ -227,6 +227,11 @@ class PdfContainer {
   }
 
   async exportPdf() {
+    const user = localStorage.getItem('user')
+    if (!user || user === 'null') {
+      window.parent.postMessage('/pricing', '*'); // 发送消息到父窗口
+      return
+    }
     const pdfDoc = await PDFLib.PDFDocument.create();
     const pageContainers = this.pagesContainer.querySelectorAll(".page-container"); // Select all .page-container elements
     for (var i = 0; i < pageContainers.length; i++) {

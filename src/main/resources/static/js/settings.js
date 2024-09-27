@@ -41,3 +41,69 @@ document.getElementById('cacheInputs').addEventListener('change', function () {
 	cacheInputs = this.checked ? 'enabled' : 'disabled'
 	localStorage.setItem('cacheInputs', cacheInputs)
 })
+
+window.addEventListener('message', event => {
+	if (
+		['http://localhost:3001', 'http://localhost:3000', 'https://www.my-pdf-tools.com'].includes(
+			event.origin
+		)
+	) {
+		const { user: userData, token, deviceId, baseUrl } = event.data
+		// 处理接收到的用户数据
+		console.log('Received user data:', userData)
+		console.log('%c [  ]-55', 'font-size:13px; background:pink; color:#bf2c9f;', event.data)
+		localStorage.setItem('user', JSON.stringify(userData))
+		localStorage.setItem('token', token)
+		localStorage.setItem('deviceId', deviceId)
+		localStorage.setItem('baseUrl', baseUrl)
+	}
+})
+
+function serialize(params) {
+	const urlParams = new URLSearchParams()
+	for (const key in params) {
+		if (params.hasOwnProperty(key)) {
+			urlParams.append(key, params[key])
+		}
+	}
+	return urlParams.toString()
+}
+window.serialize = serialize
+
+async function consumeCredits() {
+	const user = localStorage.getItem('user')
+	if (!user || user === 'null') {
+		window.parent.postMessage('/pricing', '*') // 发送消息到父窗口
+		return false
+	} else {
+		try {
+			const baseHeaders = new Headers()
+			baseHeaders.append('Accept-Language', 'en')
+			baseHeaders.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+			baseHeaders.append('X-Request-With', 'XMLHttpRequest')
+			const token = localStorage.getItem('token')
+			const uuid = localStorage.getItem('deviceId')
+			const baseUrl = localStorage.getItem('baseUrl')
+			baseHeaders.append('x-device-id', uuid)
+			baseHeaders.append('Authorization', token)
+			const res = await fetch(baseUrl + '/users/me/equities' + '?locale=en', {
+				method: 'POST',
+				mode: 'cors', // 设置为 CORS 模式
+				headers: baseHeaders,
+				body: serialize({
+					locale: 'en',
+					bizType: 'editor',
+				}),
+			}).then(res => res.json())
+			if (res.errorCode === 302) {
+				window.parent.postMessage('/pricing', '*') // 发送消息到父窗口
+				return false
+			}
+		} catch (error) {
+			alert(error)
+			return false
+		}
+	}
+	return true
+}
+window.consumeCredits = consumeCredits
